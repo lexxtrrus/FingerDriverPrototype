@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class FingerDriverPlayer : MonoBehaviour
+public class Car : MonoBehaviour
 {
+
     [SerializeField] private RoadCreator m_track;
-    [SerializeField] private FingerDriverInput m_input;
+    [SerializeField] private InputRotation m_input;
     [SerializeField] private Transform m_trackingPoint;//точка по которой будет проверяться нахождение на трасе, вынесена в нос авто
     [SerializeField] private float m_carSpeed = 2f;
     [SerializeField] private float m_maxSteer = 90f;
@@ -24,6 +25,8 @@ public class FingerDriverPlayer : MonoBehaviour
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
-            
+
     }
+
+    
 }

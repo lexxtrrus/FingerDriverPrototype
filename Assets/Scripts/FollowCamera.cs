@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FingerDriverCamera : MonoBehaviour
+public class FollowCamera : MonoBehaviour
 {
     [SerializeField] private Transform m_carTransform;
     private float camZ;
