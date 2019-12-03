@@ -22,6 +22,7 @@ public class RoadCreator : MonoBehaviour
     private List<GameObject> _checkPoints;
     private float x = 0f;
     private float y = 0f;
+    private int i = 0;
 
     void Start()
     {
@@ -33,6 +34,28 @@ public class RoadCreator : MonoBehaviour
         CreateCurveSegmentRoad();
 
         SetArrayPositionsOfLineRenderer();
+
+        
+
+    }
+
+    private void SetArrayPositionsOfLineRenderer()
+    {
+        List<Vector3> points = new List<Vector3>();
+
+        foreach (List<Vector3> element in _roadPoints)
+        {
+            if (element != null)
+            {
+                foreach (Vector3 point in element)
+                {
+                    points.Add(point);
+                }
+            }
+        }
+        _lineRenderer.positionCount = points.Count;
+        _lineRenderer.SetPositions(points.ToArray());
+
 
         //bake mesh
         Mesh mesh = new Mesh();
@@ -50,23 +73,6 @@ public class RoadCreator : MonoBehaviour
 
             segmentCounter++;
         }
-        
-
-    }
-
-    private void SetArrayPositionsOfLineRenderer()
-    {
-        List<Vector3> points = new List<Vector3>();
-
-        foreach(List<Vector3> element in _roadPoints)
-        {
-            foreach(Vector3 point in element)
-            {
-                points.Add(point);
-            }
-        }
-        _lineRenderer.positionCount = points.Count;
-        _lineRenderer.SetPositions(points.ToArray());
     }
 
     private void CreateCurveSegmentRoad()
@@ -152,10 +158,10 @@ public class RoadCreator : MonoBehaviour
     public void CreateNewTrack()
     {
         CreateCurveSegmentRoad();
-        _roadPoints.Remove(_roadPoints[0]);
+        _roadPoints.Remove(_roadPoints[i]);
+
+
         SetArrayPositionsOfLineRenderer();
-
-
         _checkPoints.RemoveRange(0, 5);
     }
 }
