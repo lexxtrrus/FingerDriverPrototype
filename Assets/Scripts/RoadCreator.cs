@@ -5,12 +5,28 @@ using UnityEngine;
 
 public class RoadCreator : MonoBehaviour
 {
+    [SerializeField] private Transform _carTrackingPoint; // мне пришлось сделать прямую ссылку на trackingPoint, это тупо, но зато работает магия
+                                                          // трасса по кусочкам исчезает и появляется
     private class TrackSegment
     {
+        public int triangleCounter;
         public Vector3[] points;
         public bool IsPointInSegment(Vector3 point)
         {
             return MathfTriangles.IsPointInTriangleXY(point, points[0], points[1], points[2]);
+        }
+
+        public TrackSegment[] neibrhoods;
+
+        public void CheckPoints()
+        {
+            foreach (var triangle in neibrhoods)
+            {
+                if(triangle != null)
+                {
+                    Debug.Log(triangle.triangleCounter);
+                }
+            }
         }
     }
 
@@ -24,7 +40,9 @@ public class RoadCreator : MonoBehaviour
     private float y = 0f;
     private int i = 0;
 
-    void Start()
+    public int currentTriangleNumber;
+
+    void Awake()
     {
         _roadPoints = new List<List<Vector3>>();
         _checkPoints = new List<GameObject>();
@@ -34,10 +52,8 @@ public class RoadCreator : MonoBehaviour
         CreateCurveSegmentRoad();
 
         SetArrayPositionsOfLineRenderer();
-
-        
-
     }
+
 
     private void SetArrayPositionsOfLineRenderer()
     {
@@ -53,25 +69,43 @@ public class RoadCreator : MonoBehaviour
                 }
             }
         }
+
         _lineRenderer.positionCount = points.Count;
         _lineRenderer.SetPositions(points.ToArray());
-
 
         //bake mesh
         Mesh mesh = new Mesh();
         _lineRenderer.BakeMesh(mesh, true);
 
         segments = new TrackSegment[mesh.triangles.Length / 3];
+        int triangles = mesh.triangles.Length;
+
         int segmentCounter = 0;
+
         for (int i = 0; i < mesh.triangles.Length; i += 3)
         {
             segments[segmentCounter] = new TrackSegment();
+            segments[segmentCounter].triangleCounter = segmentCounter;
             segments[segmentCounter].points = new Vector3[3];
             segments[segmentCounter].points[0] = mesh.vertices[mesh.triangles[i]];
             segments[segmentCounter].points[1] = mesh.vertices[mesh.triangles[i + 1]];
-            segments[segmentCounter].points[2] = mesh.vertices[mesh.triangles[i + 2]];
-
+            segments[segmentCounter].points[2] = mesh.vertices[mesh.triangles[i + 2]];   
             segmentCounter++;
+        }
+
+
+        foreach (var segment in segments)
+        {
+            segment.neibrhoods = new TrackSegment[5];
+            int neigh = -2; // треугольник должен знать СЕБЯ, двух предыдущих и двух следующих соседей
+            for (int n = 0; n < 5; n++)
+            {
+                if(segment.triangleCounter >= 3 && segment.triangleCounter <= segments[segments.Length - 3].triangleCounter) //заполнение работает от 2-го до пред-пред-последнего
+                {
+                    segment.neibrhoods[n] = segments[segment.triangleCounter + neigh];
+                    neigh++;
+                }                
+            }
         }
     }
 
@@ -132,13 +166,32 @@ public class RoadCreator : MonoBehaviour
         CreateCheckPoint(_roadPoints[0][3]);
     }
 
-    public bool IsPointInTrack(Vector3 point)
+    
+    public void WhereIsTheCar(Vector3 point)
     {
         foreach (var segment in segments)
         {
             if (segment.IsPointInSegment(point))
             {
+                currentTriangleNumber = segment.triangleCounter;
+                break;
+            }
+        }
+    }
+
+
+    public bool IsPointInTrack(Vector3 point)
+    {
+        foreach (var item in segments[currentTriangleNumber].neibrhoods)
+        {
+            if (item.IsPointInSegment(point))
+            {
+                currentTriangleNumber = item.triangleCounter;
                 return true;
+            }
+            else
+            {
+                continue;
             }
         }
         return false;
@@ -158,10 +211,9 @@ public class RoadCreator : MonoBehaviour
     public void CreateNewTrack()
     {
         CreateCurveSegmentRoad();
-        _roadPoints.Remove(_roadPoints[i]);
-
-
+         _roadPoints.Remove(_roadPoints[i]); 
         SetArrayPositionsOfLineRenderer();
+        WhereIsTheCar(_carTrackingPoint.position);
         _checkPoints.RemoveRange(0, 5);
     }
 }

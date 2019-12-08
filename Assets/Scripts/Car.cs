@@ -12,6 +12,12 @@ public class Car : MonoBehaviour
     [SerializeField] private float m_carSpeed = 2f;
     [SerializeField] private float m_maxSteer = 90f;
 
+    private void Start()
+    {
+        m_track.WhereIsTheCar(m_trackingPoint.position);
+        //Debug.Log(m_track.currentTriangleNumber);
+    }
+
 
     // Update is called once per frame
     private void Update()
