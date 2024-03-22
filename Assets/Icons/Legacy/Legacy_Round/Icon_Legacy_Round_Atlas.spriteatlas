@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Icon_Legacy_Round_Atlas
+  m_EditorData:
+    serializedVersion: 2
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 0
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingSettings:
+      serializedVersion: 2
+      padding: 4
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 1
+      enableAlphaDilation: 0
+    secondaryTextureSettings: {}
+    variantMultiplier: 1
+    packables:
+    - {fileID: 2800000, guid: 1513a8412c64ddf45839db891db41787, type: 3}
+    - {fileID: 2800000, guid: 9d71b7003c6d44146965c78ddce70481, type: 3}
+    - {fileID: 2800000, guid: 8ada4b2881d644e4a922861e1ee61054, type: 3}
+    - {fileID: 2800000, guid: 9e75c44eaa54de84cbe152eda299a1f4, type: 3}
+    - {fileID: 2800000, guid: 7313cdf3715899c438132b8e88bf5f7d, type: 3}
+    - {fileID: 2800000, guid: e9a1c68153a5da349bd98c4ff6f351b1, type: 3}
+    bindAsDefault: 1
+    isAtlasV2: 0
+    cachedData: {fileID: 0}
+    packedSpriteRenderDataKeys:
+    - 9d71b7003c6d44146965c78ddce70481: 21300000
+    - 1513a8412c64ddf45839db891db41787: 21300000
+    - e9a1c68153a5da349bd98c4ff6f351b1: 21300000
+    - 7313cdf3715899c438132b8e88bf5f7d: 21300000
+    - 8ada4b2881d644e4a922861e1ee61054: 21300000
+    - 9e75c44eaa54de84cbe152eda299a1f4: 21300000
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: 9d71b7003c6d44146965c78ddce70481, type: 3}
+  - {fileID: 21300000, guid: 1513a8412c64ddf45839db891db41787, type: 3}
+  - {fileID: 21300000, guid: e9a1c68153a5da349bd98c4ff6f351b1, type: 3}
+  - {fileID: 21300000, guid: 7313cdf3715899c438132b8e88bf5f7d, type: 3}
+  - {fileID: 21300000, guid: 8ada4b2881d644e4a922861e1ee61054, type: 3}
+  - {fileID: 21300000, guid: 9e75c44eaa54de84cbe152eda299a1f4, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - Wheel_48x48
+  - Wheel_36x36
+  - Wheel_192x192
+  - Wheel_144x144
+  - Wheel_72x72
+  - Wheel_92x92
+  m_RenderDataMap: {}
+  m_Tag: Icon_Legacy_Round_Atlas
+  m_IsVariant: 0

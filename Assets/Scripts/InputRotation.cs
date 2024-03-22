@@ -1,51 +1,46 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class InputRotation : MonoBehaviour
 {
-    [SerializeField] private Transform m_steerWheelTransform;
-    [SerializeField] [Range(0, 100f)] private float m_maxSteerAngle = 90;
-    [SerializeField] [Range(0f, 1f)] private float m_steerAcceleration = 0.25f;
+    [SerializeField]
+    private Transform _steerWheelTransform;
 
-    private float steerAxis;
+    [SerializeField]
+    private float _maxSteerAngle = 90;
 
-    public float SteerAxis
-    {
-        get => steerAxis;
-        set => steerAxis = Mathf.Lerp(steerAxis, value, m_steerAcceleration);
-    }
+    [SerializeField]
+    private float _steerAcceleration = 0.25f;
 
-    private Vector2 startSteerWheelPoint;
-    private Camera mainCamera;
+    private float _steerAxis;
+    private Vector2 _startSteerWheelPoint;
+    private Camera _mainCamera;
+    public float SteerAxis => _steerAxis;
 
     private void Start()
     {
-        mainCamera = Camera.main;
-        startSteerWheelPoint = mainCamera.WorldToScreenPoint(m_steerWheelTransform.position);
+        _mainCamera = Camera.main;
+        _startSteerWheelPoint = _mainCamera.WorldToScreenPoint(_steerWheelTransform.position);
     }
 
     private void Update()
     {
-        if (Input.GetMouseButton(0))
+        _steerAxis = CalculateSteerAxis();
+        _steerWheelTransform.localEulerAngles = new Vector3(0f, 0f, _steerAxis * _maxSteerAngle);
+    }
+
+    private float CalculateSteerAxis()
+    {
+        if (!Input.GetMouseButton(0)) return 0;
+
+        var angle = Vector2.Angle(Vector2.up, (Vector2) Input.mousePosition - _startSteerWheelPoint);
+        angle /= _maxSteerAngle;
+        angle = Mathf.Clamp01(angle);
+
+        if (Input.mousePosition.x > _startSteerWheelPoint.x)
         {
-            //угол между рулем и точкой касания экрана
-            float angle = Vector2.Angle(Vector2.up, (Vector2)Input.mousePosition - startSteerWheelPoint);
-
-            angle /= m_maxSteerAngle;
-            angle = Mathf.Clamp01(angle);
-
-            if (Input.mousePosition.x > startSteerWheelPoint.x)
-            {
-                angle *= -1f;
-            }
-
-            SteerAxis = angle;
-        }
-        else
-        {
-            SteerAxis = 0;
+            angle *= -1f;
         }
 
-        m_steerWheelTransform.localEulerAngles = new Vector3(0f, 0f, steerAxis * m_maxSteerAngle);
+        return Mathf.Lerp(_steerAxis, angle, _steerAcceleration);
     }
 }

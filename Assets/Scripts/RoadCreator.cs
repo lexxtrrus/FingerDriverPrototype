@@ -1,34 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class RoadCreator : MonoBehaviour
 {
-    [SerializeField] private Transform _carTrackingPoint; // мне пришлось сделать прямую ссылку на trackingPoint, это тупо, но зато работает магия
-                                                          // трасса по кусочкам исчезает и появляется
-    private class TrackSegment
-    {
-        public int triangleCounter;
-        public Vector3[] points;
-        public bool IsPointInSegment(Vector3 point)
-        {
-            return MathfTriangles.IsPointInTriangleXY(point, points[0], points[1], points[2]);
-        }
-
-        public TrackSegment[] neibrhoods;
-
-        public void CheckPoints()
-        {
-            foreach (var triangle in neibrhoods)
-            {
-                if(triangle != null)
-                {
-                    Debug.Log(triangle.triangleCounter);
-                }
-            }
-        }
-    }
+    [SerializeField] private Transform _carTrackingPoint;
 
     [SerializeField] GameObject _checkpoitsHolder;
     [SerializeField] LineRenderer _lineRenderer;
@@ -85,24 +60,24 @@ public class RoadCreator : MonoBehaviour
         for (int i = 0; i < mesh.triangles.Length; i += 3)
         {
             segments[segmentCounter] = new TrackSegment();
-            segments[segmentCounter].triangleCounter = segmentCounter;
-            segments[segmentCounter].points = new Vector3[3];
-            segments[segmentCounter].points[0] = mesh.vertices[mesh.triangles[i]];
-            segments[segmentCounter].points[1] = mesh.vertices[mesh.triangles[i + 1]];
-            segments[segmentCounter].points[2] = mesh.vertices[mesh.triangles[i + 2]];   
+            segments[segmentCounter].TriangleCounter = segmentCounter;
+            segments[segmentCounter].Points = new Vector3[3];
+            segments[segmentCounter].Points[0] = mesh.vertices[mesh.triangles[i]];
+            segments[segmentCounter].Points[1] = mesh.vertices[mesh.triangles[i + 1]];
+            segments[segmentCounter].Points[2] = mesh.vertices[mesh.triangles[i + 2]];   
             segmentCounter++;
         }
 
 
         foreach (var segment in segments)
         {
-            segment.neibrhoods = new TrackSegment[5];
+            segment.Neibrhoods = new TrackSegment[5];
             int neigh = -2; // треугольник должен знать СЕБЯ, двух предыдущих и двух следующих соседей
             for (int n = 0; n < 5; n++)
             {
-                if(segment.triangleCounter >= 3 && segment.triangleCounter <= segments[segments.Length - 3].triangleCounter) //заполнение работает от 2-го до пред-пред-последнего
+                if(segment.TriangleCounter >= 3 && segment.TriangleCounter <= segments[segments.Length - 3].TriangleCounter) //заполнение работает от 2-го до пред-пред-последнего
                 {
-                    segment.neibrhoods[n] = segments[segment.triangleCounter + neigh];
+                    segment.Neibrhoods[n] = segments[segment.TriangleCounter + neigh];
                     neigh++;
                 }                
             }
@@ -133,9 +108,9 @@ public class RoadCreator : MonoBehaviour
 
         Vector3 p01, p12, p23, p012, p123, p0123;
 
-        int p = 1;
+        var p = 1;
 
-        for (float u = 0.025f; u <= 1; u+= 0.025f)
+        for (var u = 0.025f; u <= 1; u+= 0.025f)
         {
             p01 = (1 - u) * p0 + u * p1;
             p12 = (1 - u) * p1 + u * p2;
@@ -144,7 +119,7 @@ public class RoadCreator : MonoBehaviour
             p123 = (1 - u) * p12 + u * p23;
             p0123 = (1 - u) * p012 + u * p123;            
 
-            _roadPoints[_roadPoints.Count - 1].Add(p0123);
+            _roadPoints[^1].Add(p0123);
 
             if (p % 8 == 0)
             {
@@ -157,7 +132,7 @@ public class RoadCreator : MonoBehaviour
     public void CreateStartSegmentRoad()
     {
         _roadPoints.Add(new List<Vector3>());
-        for (float u = -4f; u <= 2f; u+=2f)
+        for (var u = -8f; u <= 2f; u+=2f)
         {
             _roadPoints[0].Add(new Vector3(0f, u, 0f));
         }
@@ -173,7 +148,7 @@ public class RoadCreator : MonoBehaviour
         {
             if (segment.IsPointInSegment(point))
             {
-                currentTriangleNumber = segment.triangleCounter;
+                currentTriangleNumber = segment.TriangleCounter;
                 break;
             }
         }
@@ -182,18 +157,13 @@ public class RoadCreator : MonoBehaviour
 
     public bool IsPointInTrack(Vector3 point)
     {
-        foreach (var item in segments[currentTriangleNumber].neibrhoods)
+        foreach (var item in segments[currentTriangleNumber].Neibrhoods)
         {
-            if (item.IsPointInSegment(point))
-            {
-                currentTriangleNumber = item.triangleCounter;
-                return true;
-            }
-            else
-            {
-                continue;
-            }
+            if (!item.IsPointInSegment(point)) continue;
+            currentTriangleNumber = item.TriangleCounter;
+            return true;
         }
+        
         return false;
     }
 
